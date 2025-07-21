@@ -26,15 +26,27 @@ async function startServer() {
                 id: ID!
                 title: String!
                 completed: Boolean
+                user: User
             }
 
               type Query {
                 getTodos: [Todo]
                 getAllUsers: [User]
                 getUser(id: ID!): User
+
              }
             `,
         resolvers : {
+            Todo: {  //if Todo ka user fetch krna koi aaye
+                user: async (todo) => {
+                  try {  
+                    const response = await axios.get(`https://jsonplaceholder.typicode.com/users/${todo.id}`);
+                    return response.data;
+                } catch(error) {
+                    return null;
+                }
+            }
+            },
             Query: { 
                 //getTodos resolver function
                 // getTodos: () => [ {id: 1, title: 'something', completed: false}]
@@ -46,6 +58,16 @@ async function startServer() {
             }
         }
     });
+//     /query {
+//   getTodos {
+
+//     title
+//     completed
+//     user {
+//       name, email
+//     }
+//   }
+//}
     app.use(bodyParser.json());
   
 
